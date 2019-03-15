@@ -13,6 +13,7 @@ enum Button
 	Up,
 	Left,
 	Right,
+	Hold,
 	Start,
 	Quit
 };
@@ -82,8 +83,9 @@ int main(int argc, char **argv)
     map.MapBool(Up, keyboardId, gainput::KeyUp);
     map.MapBool(Left, keyboardId, gainput::KeyLeft);
     map.MapBool(Right, keyboardId, gainput::KeyRight);
-	map.MapBool(Start, keyboardId, gainput::KeyRight);
-	map.MapBool(Quit, keyboardId, gainput::KeyRight);
+	map.MapBool(Start, keyboardId, gainput::KeyS);
+	map.MapBool(Quit, keyboardId, gainput::KeyQ);
+	map.MapBool(Hold, keyboardId, gainput::KeySpace);
 
     manager.SetDisplaySize(width, height);
 
@@ -102,7 +104,7 @@ int main(int argc, char **argv)
 
 		// Check button states
 		if (map.GetBool(Up))
-		{   
+		{  
             msg.data = 6300;
             motor_pub.publish(msg);
             std::cout << "Up!!" << std::endl;
@@ -113,10 +115,14 @@ int main(int argc, char **argv)
             motor_pub.publish(msg);
 			std::cout << "Down!!" << std::endl;
 		}
-        else
+        
+		if (map.GetBool(Hold))
         {
             msg.data = 6000;
             motor_pub.publish(msg);
+			msg.data = 6000;
+            steer_pub.publish(msg);
+			std::cout << "Hold!!" << std::endl;
         }
 
         if (map.GetBool(Left))
@@ -131,11 +137,6 @@ int main(int argc, char **argv)
             steer_pub.publish(msg);
 			std::cout << "Right!!" << std::endl;
 		}
-        else
-        {
-            msg.data = 6000;
-            steer_pub.publish(msg);
-        }
 
 		if (map.GetBool(Start))
 		{   
